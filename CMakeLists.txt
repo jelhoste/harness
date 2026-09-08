@@ -27,12 +27,30 @@ set(GLFW_BUILD_WAYLAND  OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(glfw)
 
+# --- NanoVG (source officielle, pas de CMake fourni en amont donc on
+#     déclare nous-mêmes une petite lib statique à partir de ses sources) --
+FetchContent_Declare(
+    nanovg
+    GIT_REPOSITORY https://github.com/memononen/nanovg.git
+)
+FetchContent_MakeAvailable(nanovg)
+
+add_library(nanovg STATIC
+    ${nanovg_SOURCE_DIR}/src/nanovg.c
+)
+target_include_directories(nanovg PUBLIC ${nanovg_SOURCE_DIR}/src)
+
 # --- Exécutable ----------------------------------------------------------
 add_executable(nova_harness
     src/main.cpp
+    src/gl_lite.c
 )
 
-target_link_libraries(nova_harness PRIVATE glfw)
+target_link_libraries(nova_harness PRIVATE glfw nanovg)
+
+if(UNIX AND NOT APPLE)
+    target_link_libraries(nova_harness PRIVATE m)
+endif()
 
 # --- OpenGL selon plateforme ----------------------------------------------
 if(APPLE)
