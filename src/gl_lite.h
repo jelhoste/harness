@@ -45,10 +45,17 @@ typedef ptrdiff_t GLintptr;
 #define GL_COMPILE_STATUS                0x8B81
 #define GL_LINK_STATUS                   0x8B82
 #define GL_INFO_LOG_LENGTH                0x8B84
+#ifndef GL_TEXTURE0
 #define GL_TEXTURE0                      0x84C0
+#endif
+#ifndef GL_RED
 #define GL_RED                           0x1903
+#endif
 #define GL_TEXTURE_SWIZZLE_RGBA          0x8E46
 #define GL_FRAMEBUFFER_SRGB              0x8DB9
+#ifndef GL_UNIFORM_BUFFER
+#define GL_UNIFORM_BUFFER                0x8A11
+#endif
 
 // --- Pointeurs de fonctions -------------------------------------------
 typedef GLuint (*PFNGLCREATESHADERPROC)(GLenum type);
@@ -84,9 +91,21 @@ typedef void (*PFNGLVERTEXATTRIBPOINTERPROC)(GLuint index, GLint size, GLenum ty
 typedef void (*PFNGLENABLEVERTEXATTRIBARRAYPROC)(GLuint index);
 typedef void (*PFNGLDISABLEVERTEXATTRIBARRAYPROC)(GLuint index);
 
-typedef void (*PFNGLACTIVETEXTUREPROC)(GLenum texture);
 typedef void (*PFNGLBLENDFUNCSEPARATEPROC)(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
 typedef void (*PFNGLSTENCILOPSEPARATEPROC)(GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass);
+typedef void (*PFNGLGENERATEMIPMAPPROC)(GLenum target);
+typedef GLuint (*PFNGLGETUNIFORMBLOCKINDEXPROC)(GLuint program, const GLchar* uniformBlockName);
+typedef void (*PFNGLUNIFORMBLOCKBINDINGPROC)(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
+typedef void (*PFNGLBINDBUFFERBASEPROC)(GLenum target, GLuint index, GLuint buffer);
+typedef void (*PFNGLBINDBUFFERRANGEPROC)(GLenum target, GLuint index, GLuint buffer, GLintptr offset, GLsizeiptr size);
+
+// glActiveTexture (OpenGL 1.3) est parfois déjà déclarée directement par
+// l'en-tête système (observé sur Linux/Mesa) — dans ce cas on ne la
+// redéclare pas, pour éviter un conflit de déclaration.
+#ifndef GL_VERSION_1_3
+typedef void (*PFNGLACTIVETEXTUREPROC)(GLenum texture);
+#define NOVA_NEED_GLACTIVETEXTURE 1
+#endif
 
 extern PFNGLCREATESHADERPROC glCreateShader;
 extern PFNGLSHADERSOURCEPROC glShaderSource;
@@ -121,9 +140,16 @@ extern PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 extern PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray;
 extern PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray;
 
+#ifdef NOVA_NEED_GLACTIVETEXTURE
 extern PFNGLACTIVETEXTUREPROC glActiveTexture;
+#endif
 extern PFNGLBLENDFUNCSEPARATEPROC glBlendFuncSeparate;
 extern PFNGLSTENCILOPSEPARATEPROC glStencilOpSeparate;
+extern PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
+extern PFNGLGETUNIFORMBLOCKINDEXPROC glGetUniformBlockIndex;
+extern PFNGLUNIFORMBLOCKBINDINGPROC glUniformBlockBinding;
+extern PFNGLBINDBUFFERBASEPROC glBindBufferBase;
+extern PFNGLBINDBUFFERRANGEPROC glBindBufferRange;
 
 // À appeler une fois, juste après avoir rendu le contexte GL courant
 // (glfwMakeContextCurrent). Retourne 0 si une fonction requise n'a pas

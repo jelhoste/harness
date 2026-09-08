@@ -35,9 +35,16 @@ PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer = NULL;
 PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray = NULL;
 PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray = NULL;
 
+#ifdef NOVA_NEED_GLACTIVETEXTURE
 PFNGLACTIVETEXTUREPROC glActiveTexture = NULL;
+#endif
 PFNGLBLENDFUNCSEPARATEPROC glBlendFuncSeparate = NULL;
 PFNGLSTENCILOPSEPARATEPROC glStencilOpSeparate = NULL;
+PFNGLGENERATEMIPMAPPROC glGenerateMipmap = NULL;
+PFNGLGETUNIFORMBLOCKINDEXPROC glGetUniformBlockIndex = NULL;
+PFNGLUNIFORMBLOCKBINDINGPROC glUniformBlockBinding = NULL;
+PFNGLBINDBUFFERBASEPROC glBindBufferBase = NULL;
+PFNGLBINDBUFFERRANGEPROC glBindBufferRange = NULL;
 
 // Charge un symbole et râle proprement (avec son nom) s'il est introuvable,
 // plutôt que de planter plus loin avec un crash difficile à diagnostiquer.
@@ -87,9 +94,16 @@ int nova_gl_lite_init(void)
     NOVA_LOAD(glEnableVertexAttribArray);
     NOVA_LOAD(glDisableVertexAttribArray);
 
+#ifdef NOVA_NEED_GLACTIVETEXTURE
     NOVA_LOAD(glActiveTexture);
+#endif
     NOVA_LOAD(glBlendFuncSeparate);
     NOVA_LOAD(glStencilOpSeparate);
+    NOVA_LOAD(glGenerateMipmap);
+    NOVA_LOAD(glGetUniformBlockIndex);
+    NOVA_LOAD(glUniformBlockBinding);
+    NOVA_LOAD(glBindBufferBase);
+    NOVA_LOAD(glBindBufferRange);
 
     return ok;
 }
