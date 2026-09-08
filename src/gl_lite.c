@@ -2,57 +2,56 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
-PFNGLCREATESHADERPROC glCreateShader = NULL;
-PFNGLSHADERSOURCEPROC glShaderSource = NULL;
-PFNGLCOMPILESHADERPROC glCompileShader = NULL;
-PFNGLGETSHADERIVPROC glGetShaderiv = NULL;
-PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog = NULL;
-PFNGLDELETESHADERPROC glDeleteShader = NULL;
-PFNGLCREATEPROGRAMPROC glCreateProgram = NULL;
-PFNGLATTACHSHADERPROC glAttachShader = NULL;
-PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation = NULL;
-PFNGLLINKPROGRAMPROC glLinkProgram = NULL;
-PFNGLGETPROGRAMIVPROC glGetProgramiv = NULL;
-PFNGLGETPROGRAMINFOLOGPROC glGetProgramInfoLog = NULL;
-PFNGLDELETEPROGRAMPROC glDeleteProgram = NULL;
-PFNGLUSEPROGRAMPROC glUseProgram = NULL;
-PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation = NULL;
-PFNGLUNIFORM1IPROC glUniform1i = NULL;
-PFNGLUNIFORM2FVPROC glUniform2fv = NULL;
-PFNGLUNIFORM4FVPROC glUniform4fv = NULL;
+PFNGLCREATESHADERPROC nova_glCreateShader = NULL;
+PFNGLSHADERSOURCEPROC nova_glShaderSource = NULL;
+PFNGLCOMPILESHADERPROC nova_glCompileShader = NULL;
+PFNGLGETSHADERIVPROC nova_glGetShaderiv = NULL;
+PFNGLGETSHADERINFOLOGPROC nova_glGetShaderInfoLog = NULL;
+PFNGLDELETESHADERPROC nova_glDeleteShader = NULL;
+PFNGLCREATEPROGRAMPROC nova_glCreateProgram = NULL;
+PFNGLATTACHSHADERPROC nova_glAttachShader = NULL;
+PFNGLBINDATTRIBLOCATIONPROC nova_glBindAttribLocation = NULL;
+PFNGLLINKPROGRAMPROC nova_glLinkProgram = NULL;
+PFNGLGETPROGRAMIVPROC nova_glGetProgramiv = NULL;
+PFNGLGETPROGRAMINFOLOGPROC nova_glGetProgramInfoLog = NULL;
+PFNGLDELETEPROGRAMPROC nova_glDeleteProgram = NULL;
+PFNGLUSEPROGRAMPROC nova_glUseProgram = NULL;
+PFNGLGETUNIFORMLOCATIONPROC nova_glGetUniformLocation = NULL;
+PFNGLUNIFORM1IPROC nova_glUniform1i = NULL;
+PFNGLUNIFORM2FVPROC nova_glUniform2fv = NULL;
+PFNGLUNIFORM4FVPROC nova_glUniform4fv = NULL;
 
-PFNGLGENBUFFERSPROC glGenBuffers = NULL;
-PFNGLBINDBUFFERPROC glBindBuffer = NULL;
-PFNGLBUFFERDATAPROC glBufferData = NULL;
-PFNGLBUFFERSUBDATAPROC glBufferSubData = NULL;
-PFNGLDELETEBUFFERSPROC glDeleteBuffers = NULL;
+PFNGLGENBUFFERSPROC nova_glGenBuffers = NULL;
+PFNGLBINDBUFFERPROC nova_glBindBuffer = NULL;
+PFNGLBUFFERDATAPROC nova_glBufferData = NULL;
+PFNGLBUFFERSUBDATAPROC nova_glBufferSubData = NULL;
+PFNGLDELETEBUFFERSPROC nova_glDeleteBuffers = NULL;
 
-PFNGLGENVERTEXARRAYSPROC glGenVertexArrays = NULL;
-PFNGLBINDVERTEXARRAYPROC glBindVertexArray = NULL;
-PFNGLDELETEVERTEXARRAYSPROC glDeleteVertexArrays = NULL;
+PFNGLGENVERTEXARRAYSPROC nova_glGenVertexArrays = NULL;
+PFNGLBINDVERTEXARRAYPROC nova_glBindVertexArray = NULL;
+PFNGLDELETEVERTEXARRAYSPROC nova_glDeleteVertexArrays = NULL;
 
-PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer = NULL;
-PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray = NULL;
-PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray = NULL;
+PFNGLVERTEXATTRIBPOINTERPROC nova_glVertexAttribPointer = NULL;
+PFNGLENABLEVERTEXATTRIBARRAYPROC nova_glEnableVertexAttribArray = NULL;
+PFNGLDISABLEVERTEXATTRIBARRAYPROC nova_glDisableVertexAttribArray = NULL;
 
-#ifdef NOVA_NEED_GLACTIVETEXTURE
-PFNGLACTIVETEXTUREPROC glActiveTexture = NULL;
-#endif
-PFNGLBLENDFUNCSEPARATEPROC glBlendFuncSeparate = NULL;
-PFNGLSTENCILOPSEPARATEPROC glStencilOpSeparate = NULL;
-PFNGLGENERATEMIPMAPPROC glGenerateMipmap = NULL;
-PFNGLGETUNIFORMBLOCKINDEXPROC glGetUniformBlockIndex = NULL;
-PFNGLUNIFORMBLOCKBINDINGPROC glUniformBlockBinding = NULL;
-PFNGLBINDBUFFERBASEPROC glBindBufferBase = NULL;
-PFNGLBINDBUFFERRANGEPROC glBindBufferRange = NULL;
+PFNGLACTIVETEXTUREPROC nova_glActiveTexture = NULL;
+PFNGLBLENDFUNCSEPARATEPROC nova_glBlendFuncSeparate = NULL;
+PFNGLSTENCILOPSEPARATEPROC nova_glStencilOpSeparate = NULL;
+PFNGLGENERATEMIPMAPPROC nova_glGenerateMipmap = NULL;
+PFNGLGETUNIFORMBLOCKINDEXPROC nova_glGetUniformBlockIndex = NULL;
+PFNGLUNIFORMBLOCKBINDINGPROC nova_glUniformBlockBinding = NULL;
+PFNGLBINDBUFFERBASEPROC nova_glBindBufferBase = NULL;
+PFNGLBINDBUFFERRANGEPROC nova_glBindBufferRange = NULL;
 
-// Charge un symbole et râle proprement (avec son nom) s'il est introuvable,
-// plutôt que de planter plus loin avec un crash difficile à diagnostiquer.
-#define NOVA_LOAD(name) \
+// Charge un symbole (identifié par son vrai nom OpenGL, passé en chaîne
+// littérale pour ne pas passer par la macro de redirection) et râle
+// proprement s'il est introuvable.
+#define NOVA_LOAD(realname_str, var) \
     do { \
-        *(void**)(&(name)) = (void*)glfwGetProcAddress(#name); \
-        if (!(name)) { \
-            fprintf(stderr, "[gl_lite] symbole OpenGL introuvable : %s\n", #name); \
+        *(void**)(&(var)) = (void*)glfwGetProcAddress(realname_str); \
+        if (!(var)) { \
+            fprintf(stderr, "[gl_lite] symbole OpenGL introuvable : %s\n", realname_str); \
             ok = 0; \
         } \
     } while (0)
@@ -61,49 +60,47 @@ int nova_gl_lite_init(void)
 {
     int ok = 1;
 
-    NOVA_LOAD(glCreateShader);
-    NOVA_LOAD(glShaderSource);
-    NOVA_LOAD(glCompileShader);
-    NOVA_LOAD(glGetShaderiv);
-    NOVA_LOAD(glGetShaderInfoLog);
-    NOVA_LOAD(glDeleteShader);
-    NOVA_LOAD(glCreateProgram);
-    NOVA_LOAD(glAttachShader);
-    NOVA_LOAD(glBindAttribLocation);
-    NOVA_LOAD(glLinkProgram);
-    NOVA_LOAD(glGetProgramiv);
-    NOVA_LOAD(glGetProgramInfoLog);
-    NOVA_LOAD(glDeleteProgram);
-    NOVA_LOAD(glUseProgram);
-    NOVA_LOAD(glGetUniformLocation);
-    NOVA_LOAD(glUniform1i);
-    NOVA_LOAD(glUniform2fv);
-    NOVA_LOAD(glUniform4fv);
+    NOVA_LOAD("glCreateShader", nova_glCreateShader);
+    NOVA_LOAD("glShaderSource", nova_glShaderSource);
+    NOVA_LOAD("glCompileShader", nova_glCompileShader);
+    NOVA_LOAD("glGetShaderiv", nova_glGetShaderiv);
+    NOVA_LOAD("glGetShaderInfoLog", nova_glGetShaderInfoLog);
+    NOVA_LOAD("glDeleteShader", nova_glDeleteShader);
+    NOVA_LOAD("glCreateProgram", nova_glCreateProgram);
+    NOVA_LOAD("glAttachShader", nova_glAttachShader);
+    NOVA_LOAD("glBindAttribLocation", nova_glBindAttribLocation);
+    NOVA_LOAD("glLinkProgram", nova_glLinkProgram);
+    NOVA_LOAD("glGetProgramiv", nova_glGetProgramiv);
+    NOVA_LOAD("glGetProgramInfoLog", nova_glGetProgramInfoLog);
+    NOVA_LOAD("glDeleteProgram", nova_glDeleteProgram);
+    NOVA_LOAD("glUseProgram", nova_glUseProgram);
+    NOVA_LOAD("glGetUniformLocation", nova_glGetUniformLocation);
+    NOVA_LOAD("glUniform1i", nova_glUniform1i);
+    NOVA_LOAD("glUniform2fv", nova_glUniform2fv);
+    NOVA_LOAD("glUniform4fv", nova_glUniform4fv);
 
-    NOVA_LOAD(glGenBuffers);
-    NOVA_LOAD(glBindBuffer);
-    NOVA_LOAD(glBufferData);
-    NOVA_LOAD(glBufferSubData);
-    NOVA_LOAD(glDeleteBuffers);
+    NOVA_LOAD("glGenBuffers", nova_glGenBuffers);
+    NOVA_LOAD("glBindBuffer", nova_glBindBuffer);
+    NOVA_LOAD("glBufferData", nova_glBufferData);
+    NOVA_LOAD("glBufferSubData", nova_glBufferSubData);
+    NOVA_LOAD("glDeleteBuffers", nova_glDeleteBuffers);
 
-    NOVA_LOAD(glGenVertexArrays);
-    NOVA_LOAD(glBindVertexArray);
-    NOVA_LOAD(glDeleteVertexArrays);
+    NOVA_LOAD("glGenVertexArrays", nova_glGenVertexArrays);
+    NOVA_LOAD("glBindVertexArray", nova_glBindVertexArray);
+    NOVA_LOAD("glDeleteVertexArrays", nova_glDeleteVertexArrays);
 
-    NOVA_LOAD(glVertexAttribPointer);
-    NOVA_LOAD(glEnableVertexAttribArray);
-    NOVA_LOAD(glDisableVertexAttribArray);
+    NOVA_LOAD("glVertexAttribPointer", nova_glVertexAttribPointer);
+    NOVA_LOAD("glEnableVertexAttribArray", nova_glEnableVertexAttribArray);
+    NOVA_LOAD("glDisableVertexAttribArray", nova_glDisableVertexAttribArray);
 
-#ifdef NOVA_NEED_GLACTIVETEXTURE
-    NOVA_LOAD(glActiveTexture);
-#endif
-    NOVA_LOAD(glBlendFuncSeparate);
-    NOVA_LOAD(glStencilOpSeparate);
-    NOVA_LOAD(glGenerateMipmap);
-    NOVA_LOAD(glGetUniformBlockIndex);
-    NOVA_LOAD(glUniformBlockBinding);
-    NOVA_LOAD(glBindBufferBase);
-    NOVA_LOAD(glBindBufferRange);
+    NOVA_LOAD("glActiveTexture", nova_glActiveTexture);
+    NOVA_LOAD("glBlendFuncSeparate", nova_glBlendFuncSeparate);
+    NOVA_LOAD("glStencilOpSeparate", nova_glStencilOpSeparate);
+    NOVA_LOAD("glGenerateMipmap", nova_glGenerateMipmap);
+    NOVA_LOAD("glGetUniformBlockIndex", nova_glGetUniformBlockIndex);
+    NOVA_LOAD("glUniformBlockBinding", nova_glUniformBlockBinding);
+    NOVA_LOAD("glBindBufferBase", nova_glBindBufferBase);
+    NOVA_LOAD("glBindBufferRange", nova_glBindBufferRange);
 
     return ok;
 }
