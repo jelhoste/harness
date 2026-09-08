@@ -56,6 +56,18 @@ typedef ptrdiff_t GLintptr;
 #ifndef GL_UNIFORM_BUFFER
 #define GL_UNIFORM_BUFFER                0x8A11
 #endif
+#ifndef GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT
+#define GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT 0x8A34
+#endif
+#ifndef GL_CLAMP_TO_EDGE
+#define GL_CLAMP_TO_EDGE                 0x812F
+#endif
+#ifndef GL_INCR_WRAP
+#define GL_INCR_WRAP                     0x8507
+#endif
+#ifndef GL_DECR_WRAP
+#define GL_DECR_WRAP                     0x8508
+#endif
 
 // --- Pointeurs de fonctions -------------------------------------------
 typedef GLuint (*PFNGLCREATESHADERPROC)(GLenum type);
