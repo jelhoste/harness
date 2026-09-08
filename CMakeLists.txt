@@ -19,6 +19,12 @@ set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL        OFF CACHE BOOL "" FORCE)
 
+# On désactive le backend Wayland : l'outil wayland-scanner requis pour le
+# compiler n'est pas présent par défaut sur les runners CI, et X11 seul
+# suffit largement pour notre usage (plugin audio, pas de session Wayland
+# pure à supporter en priorité).
+set(GLFW_BUILD_WAYLAND  OFF CACHE BOOL "" FORCE)
+
 FetchContent_MakeAvailable(glfw)
 
 # --- Exécutable ----------------------------------------------------------
