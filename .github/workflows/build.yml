@@ -1,0 +1,42 @@
+name: build
+
+# Se déclenche à chaque push et à chaque pull request.
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    # La matrice : le même job va tourner 3 fois, une fois par OS.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      # Sous Linux, il faut les paquets de dev pour X11/OpenGL
+      # (nécessaires à GLFW). Windows et macOS n'en ont pas besoin :
+      # les frameworks/libs système sont déjà présents sur les runners.
+      - name: Installer les dépendances système (Linux uniquement)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgl1-mesa-dev \
+            libx11-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libxcursor-dev \
+            libxi-dev
+
+      - name: Configurer (CMake)
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compiler
+        run: cmake --build build --config Release
