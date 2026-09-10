@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(nova_harness LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 11)
 
@@ -40,11 +40,22 @@ add_library(nanovg STATIC
 )
 target_include_directories(nanovg PUBLIC ${nanovg_SOURCE_DIR}/src)
 
+# --- Clay (layout, header unique) -----------------------------------------
+FetchContent_Declare(
+    clay
+    GIT_REPOSITORY https://github.com/nicbarker/clay.git
+)
+FetchContent_MakeAvailable(clay)
+
 # --- Exécutable ----------------------------------------------------------
 add_executable(nova_harness
     src/main.cpp
     src/gl_lite.c
+    src/clay_impl.cpp
+    src/clay_nanovg_renderer.cpp
 )
+
+target_include_directories(nova_harness PRIVATE ${clay_SOURCE_DIR})
 
 target_link_libraries(nova_harness PRIVATE glfw nanovg)
 
