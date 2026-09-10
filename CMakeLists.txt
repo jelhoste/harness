@@ -45,6 +45,11 @@ FetchContent_Declare(
     clay
     GIT_REPOSITORY https://github.com/nicbarker/clay.git
     GIT_TAG        main
+    # On ne veut que le header clay.h, pas leur système de build (qui tire
+    # en dépendances des démos : raylib, SDL2_ttf, freetype...). Pointer
+    # SOURCE_SUBDIR vers un dossier inexistant fait que CMake récupère les
+    # fichiers sans jamais lire leur CMakeLists.txt.
+    SOURCE_SUBDIR  ignore-clay-build-system
 )
 FetchContent_MakeAvailable(clay)
 
