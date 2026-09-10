@@ -44,6 +44,7 @@ target_include_directories(nanovg PUBLIC ${nanovg_SOURCE_DIR}/src)
 FetchContent_Declare(
     clay
     GIT_REPOSITORY https://github.com/nicbarker/clay.git
+    GIT_TAG        main
 )
 FetchContent_MakeAvailable(clay)
 
