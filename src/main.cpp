@@ -85,7 +85,8 @@ int main()
     errorHandler.errorHandlerFunction = nova_clay_error_handler;
     errorHandler.userData = 0;
 
-    Clay_Initialize(clayArena, (Clay_Dimensions){ (float)initWidth, (float)initHeight }, errorHandler);
+    Clay_Dimensions initDims = { (float)initWidth, (float)initHeight };
+    Clay_Initialize(clayArena, initDims, errorHandler);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -104,9 +105,14 @@ int main()
         bool mouseDown = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
         // --- Layout (Clay) ---------------------------------------------
-        Clay_SetLayoutDimensions((Clay_Dimensions){ (float)winWidth, (float)winHeight });
-        Clay_SetPointerState((Clay_Vector2){ (float)mouseX, (float)mouseY }, mouseDown);
-        Clay_UpdateScrollContainers(false, (Clay_Vector2){ 0, 0 }, 0.016f);
+        Clay_Dimensions frameDims = { (float)winWidth, (float)winHeight };
+        Clay_SetLayoutDimensions(frameDims);
+
+        Clay_Vector2 pointerPos = { (float)mouseX, (float)mouseY };
+        Clay_SetPointerState(pointerPos, mouseDown);
+
+        Clay_Vector2 scrollDelta = { 0, 0 };
+        Clay_UpdateScrollContainers(false, scrollDelta, 0.016f);
 
         Clay_BeginLayout();
 
