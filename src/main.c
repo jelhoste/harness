@@ -21,6 +21,7 @@
 
 #include "clay.h"
 #include "clay_nanovg_renderer.h"
+#include "nova_interaction.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -151,19 +152,39 @@ int main(void)
                 }
             };
             CLAY(CLAY_ID("Body"), bodyDecl) {
-                Clay_ElementDeclaration leftPanelDecl = {
-                    .layout = { .sizing = { CLAY_SIZING_FIXED(220), CLAY_SIZING_GROW(0) } },
-                    .backgroundColor = { 45, 45, 52, 255 },
-                    .cornerRadius = CLAY_CORNER_RADIUS(8)
-                };
-                CLAY(CLAY_ID("LeftPanel"), leftPanelDecl) {}
+                // Bouton interactif : bascule Normal <-> Pressed selon que
+                // le pointeur (souris ou, plus tard, tactile) est à la
+                // fois au-dessus ET enfoncé. Jamais de survol seul.
+                NovaInteractionState interactiveState = nova_get_interaction_state(
+                    CLAY_ID("InteractiveButton"), mouseDown, false);
+                Clay_Color interactiveColor = nova_state_color(interactiveState,
+                    (Clay_Color){ 70, 120, 180, 255 },  // Normal
+                    (Clay_Color){ 45, 85, 130, 255 },   // Pressed (plus sombre)
+                    (Clay_Color){ 60, 60, 60, 255 });   // (jamais atteint ici)
 
-                Clay_ElementDeclaration rightPanelDecl = {
-                    .layout = { .sizing = { CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0) } },
-                    .backgroundColor = { 38, 38, 44, 255 },
+                Clay_ElementDeclaration interactiveDecl = {
+                    .layout = { .sizing = { CLAY_SIZING_FIXED(220), CLAY_SIZING_GROW(0) } },
+                    .backgroundColor = interactiveColor,
                     .cornerRadius = CLAY_CORNER_RADIUS(8)
                 };
-                CLAY(CLAY_ID("RightPanel"), rightPanelDecl) {}
+                CLAY(CLAY_ID("InteractiveButton"), interactiveDecl) {}
+
+                // Bouton désactivé : toujours en état Disabled, quel que
+                // soit ce que fait le pointeur — sert de référence visuelle
+                // pour le 3e état.
+                NovaInteractionState disabledState = nova_get_interaction_state(
+                    CLAY_ID("DisabledButton"), mouseDown, true);
+                Clay_Color disabledColor = nova_state_color(disabledState,
+                    (Clay_Color){ 38, 38, 44, 255 },
+                    (Clay_Color){ 38, 38, 44, 255 },
+                    (Clay_Color){ 50, 50, 50, 150 });   // grisé/atténué
+
+                Clay_ElementDeclaration disabledDecl = {
+                    .layout = { .sizing = { CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0) } },
+                    .backgroundColor = disabledColor,
+                    .cornerRadius = CLAY_CORNER_RADIUS(8)
+                };
+                CLAY(CLAY_ID("DisabledButton"), disabledDecl) {}
             }
         }
 

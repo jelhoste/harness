@@ -57,6 +57,7 @@ FetchContent_MakeAvailable(clay)
 add_executable(nova_harness
     src/main.c
     src/gl_lite.c
+    src/nova_interaction.c
     src/clay_impl.cpp
     src/clay_nanovg_renderer.cpp
 )
