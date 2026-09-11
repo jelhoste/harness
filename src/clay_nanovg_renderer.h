@@ -11,8 +11,16 @@
 #include "clay.h"
 #include <nanovg.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Dessine l'ensemble des commandes produites par Clay_EndLayout() avec le
 // contexte NanoVG donné. À appeler entre nvgBeginFrame() et nvgEndFrame().
 void nova_render_clay_commands(NVGcontext* vg, Clay_RenderCommandArray commands);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // NOVA_CLAY_NANOVG_RENDERER_H

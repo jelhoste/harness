@@ -2,6 +2,13 @@
 // Objectif de cette étape : brancher Clay (layout) au-dessus de NanoVG
 // (dessin) et GLFW (fenêtre), pour afficher une mise en page de test
 // (un bandeau + deux panneaux) calculée par Clay et dessinée par NanoVG.
+//
+// Ce fichier est compilé en C (pas C++) : la macro déclarative CLAY(...)
+// s'appuie sur les initialisateurs désignés C99 combinés à des littéraux
+// composés, une combinaison que C++ (même en C++20) ne gère pas de façon
+// fiable avec cette version de Clay. C est le terrain natif de la
+// bibliothèque — GLFW, NanoVG et notre loader OpenGL sont eux aussi de
+// simples API C, donc ce choix ne pose aucun problème de compatibilité.
 
 #include "gl_lite.h"
 
@@ -15,26 +22,27 @@
 #include "clay.h"
 #include "clay_nanovg_renderer.h"
 
-#include <cstdio>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 static void glfw_error_callback(int error, const char* description)
 {
-    std::fprintf(stderr, "[GLFW error %d] %s\n", error, description);
+    fprintf(stderr, "[GLFW error %d] %s\n", error, description);
 }
 
 static void nova_clay_error_handler(Clay_ErrorData errorData)
 {
-    std::fprintf(stderr, "[Clay] %.*s\n", errorData.errorText.length, errorData.errorText.chars);
+    fprintf(stderr, "[Clay] %.*s\n", errorData.errorText.length, errorData.errorText.chars);
 }
 
-int main()
+int main(void)
 {
     glfwSetErrorCallback(glfw_error_callback);
 
     if (!glfwInit())
     {
-        std::fprintf(stderr, "Échec de glfwInit()\n");
+        fprintf(stderr, "Échec de glfwInit()\n");
         return 1;
     }
 
@@ -45,10 +53,10 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 #endif
 
-    GLFWwindow* window = glfwCreateWindow(1024, 700, "Nova — harnais de dev (étape 3 : Clay)", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1024, 700, "Nova — harnais de dev (étape 3 : Clay)", NULL, NULL);
     if (!window)
     {
-        std::fprintf(stderr, "Échec de glfwCreateWindow()\n");
+        fprintf(stderr, "Échec de glfwCreateWindow()\n");
         glfwTerminate();
         return 1;
     }
@@ -58,7 +66,7 @@ int main()
 
     if (!nova_gl_lite_init())
     {
-        std::fprintf(stderr, "Échec du chargement des fonctions OpenGL — voir les symboles manquants ci-dessus.\n");
+        fprintf(stderr, "Échec du chargement des fonctions OpenGL — voir les symboles manquants ci-dessus.\n");
         glfwDestroyWindow(window);
         glfwTerminate();
         return 1;
@@ -67,7 +75,7 @@ int main()
     NVGcontext* vg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
     if (!vg)
     {
-        std::fprintf(stderr, "Échec de nvgCreateGL3() — le contexte NanoVG n'a pas pu être créé.\n");
+        fprintf(stderr, "Échec de nvgCreateGL3() — le contexte NanoVG n'a pas pu être créé.\n");
         glfwDestroyWindow(window);
         glfwTerminate();
         return 1;
@@ -75,13 +83,13 @@ int main()
 
     // --- Initialisation de Clay --------------------------------------
     uint32_t clayMemSize = Clay_MinMemorySize();
-    void* clayMemory = std::malloc(clayMemSize);
+    void* clayMemory = malloc(clayMemSize);
     Clay_Arena clayArena = Clay_CreateArenaWithCapacityAndMemory(clayMemSize, clayMemory);
 
     int initWidth, initHeight;
     glfwGetWindowSize(window, &initWidth, &initHeight);
 
-    Clay_ErrorHandler errorHandler;
+    Clay_ErrorHandler errorHandler = { 0 };
     errorHandler.errorHandlerFunction = nova_clay_error_handler;
     errorHandler.userData = 0;
 
@@ -167,7 +175,7 @@ int main()
         glfwSwapBuffers(window);
     }
 
-    std::free(clayMemory);
+    free(clayMemory);
     nvgDeleteGL3(vg);
     glfwDestroyWindow(window);
     glfwTerminate();
