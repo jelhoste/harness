@@ -125,7 +125,7 @@ int main(void)
 
         Clay_BeginLayout();
 
-        CLAY(CLAY_ID("Root"),
+        Clay_ElementDeclaration rootDecl = {
             .layout = {
                 .sizing = { CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0) },
                 .padding = CLAY_PADDING_ALL(16),
@@ -133,31 +133,37 @@ int main(void)
                 .layoutDirection = CLAY_TOP_TO_BOTTOM
             },
             .backgroundColor = { 24, 24, 27, 255 }
-        ) {
-            CLAY(CLAY_ID("Header"),
+        };
+
+        CLAY(CLAY_ID("Root"), rootDecl) {
+            Clay_ElementDeclaration headerDecl = {
                 .layout = { .sizing = { CLAY_SIZING_GROW(0), CLAY_SIZING_FIXED(56) } },
                 .backgroundColor = { 70, 120, 180, 255 },
                 .cornerRadius = CLAY_CORNER_RADIUS(8)
-            ) {}
+            };
+            CLAY(CLAY_ID("Header"), headerDecl) {}
 
-            CLAY(CLAY_ID("Body"),
+            Clay_ElementDeclaration bodyDecl = {
                 .layout = {
                     .sizing = { CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0) },
                     .childGap = 16,
                     .layoutDirection = CLAY_LEFT_TO_RIGHT
                 }
-            ) {
-                CLAY(CLAY_ID("LeftPanel"),
+            };
+            CLAY(CLAY_ID("Body"), bodyDecl) {
+                Clay_ElementDeclaration leftPanelDecl = {
                     .layout = { .sizing = { CLAY_SIZING_FIXED(220), CLAY_SIZING_GROW(0) } },
                     .backgroundColor = { 45, 45, 52, 255 },
                     .cornerRadius = CLAY_CORNER_RADIUS(8)
-                ) {}
+                };
+                CLAY(CLAY_ID("LeftPanel"), leftPanelDecl) {}
 
-                CLAY(CLAY_ID("RightPanel"),
+                Clay_ElementDeclaration rightPanelDecl = {
                     .layout = { .sizing = { CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0) } },
                     .backgroundColor = { 38, 38, 44, 255 },
                     .cornerRadius = CLAY_CORNER_RADIUS(8)
-                ) {}
+                };
+                CLAY(CLAY_ID("RightPanel"), rightPanelDecl) {}
             }
         }
 
