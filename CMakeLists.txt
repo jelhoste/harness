@@ -77,6 +77,7 @@ if(APPLE)
         "-framework IOKit"
         "-framework CoreVideo"
     )
+    target_compile_definitions(nova_harness PRIVATE GL_SILENCE_DEPRECATION)
 elseif(UNIX)
     find_package(OpenGL REQUIRED)
     target_link_libraries(nova_harness PRIVATE OpenGL::GL)

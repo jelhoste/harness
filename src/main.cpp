@@ -111,13 +111,13 @@ int main()
         Clay_Vector2 pointerPos = { (float)mouseX, (float)mouseY };
         Clay_SetPointerState(pointerPos, mouseDown);
 
+        float deltaTime = 0.016f;
         Clay_Vector2 scrollDelta = { 0, 0 };
-        Clay_UpdateScrollContainers(false, scrollDelta, 0.016f);
+        Clay_UpdateScrollContainers(false, scrollDelta, deltaTime);
 
         Clay_BeginLayout();
 
-        CLAY({
-            .id = CLAY_ID("Root"),
+        CLAY(CLAY_ID("Root"),
             .layout = {
                 .sizing = { CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0) },
                 .padding = CLAY_PADDING_ALL(16),
@@ -125,39 +125,35 @@ int main()
                 .layoutDirection = CLAY_TOP_TO_BOTTOM
             },
             .backgroundColor = { 24, 24, 27, 255 }
-        }) {
-            CLAY({
-                .id = CLAY_ID("Header"),
+        ) {
+            CLAY(CLAY_ID("Header"),
                 .layout = { .sizing = { CLAY_SIZING_GROW(0), CLAY_SIZING_FIXED(56) } },
                 .backgroundColor = { 70, 120, 180, 255 },
                 .cornerRadius = CLAY_CORNER_RADIUS(8)
-            }) {}
+            ) {}
 
-            CLAY({
-                .id = CLAY_ID("Body"),
+            CLAY(CLAY_ID("Body"),
                 .layout = {
                     .sizing = { CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0) },
                     .childGap = 16,
                     .layoutDirection = CLAY_LEFT_TO_RIGHT
                 }
-            }) {
-                CLAY({
-                    .id = CLAY_ID("LeftPanel"),
+            ) {
+                CLAY(CLAY_ID("LeftPanel"),
                     .layout = { .sizing = { CLAY_SIZING_FIXED(220), CLAY_SIZING_GROW(0) } },
                     .backgroundColor = { 45, 45, 52, 255 },
                     .cornerRadius = CLAY_CORNER_RADIUS(8)
-                }) {}
+                ) {}
 
-                CLAY({
-                    .id = CLAY_ID("RightPanel"),
+                CLAY(CLAY_ID("RightPanel"),
                     .layout = { .sizing = { CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0) } },
                     .backgroundColor = { 38, 38, 44, 255 },
                     .cornerRadius = CLAY_CORNER_RADIUS(8)
-                }) {}
+                ) {}
             }
         }
 
-        Clay_RenderCommandArray clayCommands = Clay_EndLayout();
+        Clay_RenderCommandArray clayCommands = Clay_EndLayout(deltaTime);
 
         // --- Rendu (NanoVG) ----------------------------------------------
         glViewport(0, 0, fbWidth, fbHeight);
